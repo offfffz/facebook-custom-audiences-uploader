@@ -28,4 +28,3 @@ _Rate Limit_: This application put the customer data into batches and upload the
    2. linux: `./audience-uploader-linux upload`
    3. windows: `./audience-uploader-win.exe upload`
 2. If there are no errors, the `error.log` will stay empty after it finished.
-3.
