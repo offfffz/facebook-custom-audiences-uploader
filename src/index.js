@@ -3,6 +3,7 @@ const { init } = require("./initializer")
 const adsSDK = require("facebook-nodejs-business-sdk")
 const fs = require("fs")
 const readline = require("readline")
+const { logger } = require("./logger")
 
 const lineProcessor = (schema) => {
   return (line) => {
@@ -10,7 +11,7 @@ const lineProcessor = (schema) => {
 
     const splitted = line.split(",")
     if (splitted.length !== schema.length) {
-      console.error("schema mismatched", schema, splitted)
+      logger.error("schema mismatched", schema, splitted)
       return
     }
 
@@ -47,7 +48,7 @@ const uploader = () => {
     data.push(line)
 
     if (data.length === batchSize) {
-      console.info(
+      logger.info(
         `process batch ${batchNumber}: line ${batchNumber * batchSize} to ${
           (batchNumber + 1) * batchSize - 1
         }`
@@ -61,14 +62,14 @@ const uploader = () => {
       })
 
       if (error) {
-        console.error(
+        logger.error(
           `process batch ${batchNumber}: line ${batchNumber * batchSize} to ${
             (batchNumber + 1) * batchSize - 1
           }`,
           error
         )
       } else {
-        console.info(
+        logger.info(
           `process batch ${batchNumber}: line ${batchNumber * batchSize} to ${
             (batchNumber + 1) * batchSize - 1
           } done!`
@@ -83,7 +84,7 @@ const uploader = () => {
 
   rd.on("close", async () => {
     if (data.length !== 0) {
-      console.info(
+      logger.info(
         `process batch ${batchNumber}: line ${batchNumber * batchSize} to ${
           (batchNumber + 1) * batchSize - 1
         }`
@@ -95,14 +96,14 @@ const uploader = () => {
         data: data.map(processLine),
       })
       if (error) {
-        console.error(
+        logger.error(
           `process batch ${batchNumber}: line ${batchNumber * batchSize} to ${
             (batchNumber + 1) * batchSize - 1
           }`,
           error
         )
       } else {
-        console.info(
+        logger.info(
           `process batch ${batchNumber}: line ${batchNumber * batchSize} to ${
             (batchNumber + 1) * batchSize - 1
           } done!`
@@ -120,7 +121,7 @@ const uploadUsers = async ({
   data = [],
 }) => {
   const { CustomAudience } = adsSDK
-  const api = adsSDK.FacebookAdsApi.init(accessToken)
+  adsSDK.FacebookAdsApi.init(accessToken)
 
   try {
     const customAudience = new CustomAudience(customAudienceID)
