@@ -1,3 +1,4 @@
+const fs = require("fs")
 const sha256 = require("js-sha256")
 
 const check = (error) => {
@@ -23,7 +24,15 @@ const hashStr = (str) => {
   return sha256(str)
 }
 
+const getConfig = () => {
+  let data = fs.readFileSync("config.json")
+  let object = JSON.parse(data)
+
+  return object
+}
+
 module.exports = {
+  getConfig,
   check,
   normalizeStr,
   hashStr,

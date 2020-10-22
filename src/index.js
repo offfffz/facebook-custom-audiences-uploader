@@ -1,15 +1,8 @@
+const { hashStr, normalizeStr, getConfig } = require("./utils")
+const { init } = require("./initializer")
 const adsSDK = require("facebook-nodejs-business-sdk")
 const fs = require("fs")
-
 const readline = require("readline")
-const { init } = require("./initializer")
-
-const getConfig = () => {
-  let data = fs.readFileSync("config.json")
-  let object = JSON.parse(data)
-
-  return object
-}
 
 const lineProcessor = (schema) => {
   return (line) => {
@@ -26,8 +19,16 @@ const lineProcessor = (schema) => {
 }
 
 const uploader = () => {
-  const { customAudienceID, header, mapping, batchSize } = getConfig()
-  const schema = ["EMAIL", "PHONE", "FN", "LN"]
+  const {
+    accessToken,
+    customAudienceID,
+    header,
+    mapping,
+    batchSize,
+  } = getConfig()
+  const schema = Object.entries(mapping)
+    .sort((a, b) => a[0] - b[0])
+    .map((v) => v[1])
   const processLine = lineProcessor(schema)
   const rd = readline.createInterface({
     input: fs.createReadStream("audiences.csv"),
@@ -52,7 +53,8 @@ const uploader = () => {
         }`
       )
       rd.pause()
-      const resp, error = await uploadUsers({
+      const [resp, error] = await uploadUsers({
+        accessToken,
         customAudienceID,
         schema: schema,
         data: data.map(processLine),
@@ -86,7 +88,8 @@ const uploader = () => {
           (batchNumber + 1) * batchSize - 1
         }`
       )
-      const resp, error = await uploadUsers({
+      const [resp, error] = await uploadUsers({
+        accessToken,
         customAudienceID,
         schema: schema,
         data: data.map(processLine),
@@ -124,7 +127,6 @@ const uploadUsers = async ({
     const resp = await customAudience.createUser(null, {
       payload: { schema, data },
     })
-    console.log("")
     return [resp, null]
   } catch (error) {
     return [null, error]

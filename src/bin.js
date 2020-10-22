@@ -1,5 +1,10 @@
+const { Command } = require("commander")
 const { init, uploader } = require(".")
-// const file = process.argv[2];
-// console.log(beautify(file))
 
-uploader()
+const program = new Command()
+program.version("0.0.1")
+
+program.command("init").action(() => init())
+program.command("upload").action(() => uploader())
+
+program.parse(process.argv)
