@@ -1,4 +1,5 @@
 const fs = require("fs")
+const { check } = require("./utils")
 
 const initConfig = () => {
   if (fs.existsSync("config.json")) {
